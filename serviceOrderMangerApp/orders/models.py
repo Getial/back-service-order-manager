@@ -41,7 +41,7 @@ class Reference(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name='get_refencies', verbose_name='Marca')
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='get_refencies', verbose_name='Categoria')
     manpower = models.DecimalField(max_digits=8, decimal_places=0, null=True, verbose_name='Mano de obra')
-    exploded_view = models.FileField(upload_to='exploded_views', verbose_name='Despiece')
+    exploded_view = models.FileField(upload_to='exploded_views', null=True, verbose_name='Despiece')
     
     class Meta:
         verbose_name = 'Reference'
