@@ -23,7 +23,7 @@ class ReferenceSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('fullname', 'document', 'phone_number', 'second_phone_number', 'department', 'municipality', 'address')
+        fields = ('fullname', 'document', 'phone_number', 'second_phone_number', 'municipality', 'address')
         
 
 class CollaboratorSerializer(serializers.ModelSerializer):

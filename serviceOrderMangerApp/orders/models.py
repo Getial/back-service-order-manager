@@ -57,7 +57,6 @@ class User(models.Model):
     document = models.CharField(max_length=20, verbose_name='Documento')
     phone_number = models.CharField(max_length=20, verbose_name='Celular')
     second_phone_number = models.CharField(max_length=20, verbose_name='Telefono')
-    department = models.CharField(max_length=20, verbose_name='Departamento')
     municipality = models.CharField(max_length=30, verbose_name='Municipio')
     address = models.CharField(max_length=200, verbose_name='Direccion')
     
