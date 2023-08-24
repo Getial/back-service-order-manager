@@ -25,13 +25,9 @@ class ReferenceViewSet(viewsets.ModelViewSet):
 
         # filtrado por marca
         brand = self.request.query_params.get('brand')
-        if brand:
-            queryset = queryset.filter(brand=brand)
-
-        # filtrado por usuario
-        user = self.request.query_params.get('user')
-        if user:
-            queryset = queryset.filter(user=user)
+        category = self.request.query_params.get('category')
+        if brand and category:
+            queryset = queryset.filter(brand=brand).filter(category=category)
 
         return queryset
 
@@ -39,6 +35,13 @@ class ReferenceViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        name = self.request.query_params.get('name', None)
+        if name is not None:
+            queryset = queryset.filter(fullname__icontains=name)
+        return queryset
 
 
 class CollaboratorViewSet(viewsets.ModelViewSet):
@@ -54,3 +57,10 @@ class EvidenceViewSet(viewsets.ModelViewSet):
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        last = self.request.query_params.get('last', None)
+        if last is not None:
+            queryset = queryset.filter(is_guarantee=False)
+        return queryset

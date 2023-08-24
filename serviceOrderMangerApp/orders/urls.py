@@ -14,5 +14,5 @@ router.register('evidences', EvidenceViewSet, basename='evidences')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('docs/', include_docs_urls(title="Order API"))
+    path('docs/', include_docs_urls(title="Order API")),
 ]
