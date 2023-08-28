@@ -61,7 +61,7 @@ class Reference(models.Model):
         return self.reference
 
 
-class User(models.Model):
+class Client(models.Model):
     fullname = models.CharField(max_length=50, verbose_name='Nombre completo')
     document = models.CharField(
         max_length=20, verbose_name='Documento', unique=True)
@@ -96,11 +96,11 @@ class Order(models.Model):
     entry_date = models.DateTimeField("Fecha de ingreso")
     is_guarantee = models.BooleanField(default=False)
     service_number = models.CharField(max_length=30, null=True)
-    brand_id = models.ForeignKey(Brand, on_delete=models.PROTECT)
+    brand = models.ForeignKey(Brand, on_delete=models.PROTECT)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     reference = models.ForeignKey(Reference, on_delete=models.PROTECT)
     serial = models.CharField(max_length=30, null=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
     reason_for_entry = models.CharField(max_length=200, null=True)
     observations = models.TextField(max_length=500)
     diagnostic = models.TextField(max_length=1000, null=True)
@@ -138,7 +138,7 @@ class Order(models.Model):
     class Meta:
         verbose_name = "Order"
         verbose_name_plural = "Orders"
-        ordering = ['entry_date']
+        # ordering = ['entry_date']
 
     def __str__(self):
         return self.service_number

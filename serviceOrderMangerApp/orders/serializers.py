@@ -1,6 +1,10 @@
+# Django
+from django.contrib.auth import password_validation, authenticate
+
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 from django_filters import rest_framework as filters
-from .models import Brand, Category, Reference, User, Collaborator, Order, Evidence
+from .models import Brand, Category, Reference, Client, Collaborator, Order, Evidence
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -10,9 +14,11 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    type_description = serializers.ReadOnlyField(source="get_type_display")
+
     class Meta:
         model = Category
-        fields = ('id', 'name', 'type')
+        fields = ('id', 'name', 'type_description')
 
 
 class ReferenceFilter(filters.Filter):
@@ -38,28 +44,56 @@ class ReferenceSerializer(serializers.ModelSerializer):
         filterset_class = ReferenceFilter
 
 
-class UserFilter(filters.FilterSet):
+class ClientFilter(filters.FilterSet):
     name = filters.CharFilter(field_name='fullname', lookup_expr='icontains')
 
     class Meta:
-        model = User
+        model = Client
         fields = {
             'fullname': ['icontains']
         }
 
 
-class UserSerializer(serializers.ModelSerializer):
+class ClientSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = Client
         fields = ('id', 'fullname', 'document', 'phone_number',
                   'second_phone_number', 'email', 'municipality', 'address')
-        filterset_class = UserFilter
+        filterset_class = ClientFilter
 
 
 class CollaboratorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collaborator
         fields = ('id', 'name', 'occupation', 'email', 'password')
+
+
+class CollaboratorLoginSerializer(serializers.Serializer):
+
+    # Campos que vamos a requerir
+    email = serializers.EmailField()
+    password = serializers.CharField(min_length=8, max_length=64)
+
+    # Primero validamos los datos
+    def validate(self, data):
+        print(data['email'])
+        print(data['password'])
+        # authenticate recibe las credenciales, si son válidas devuelve el objeto del usuario
+        user = authenticate(
+            email=data['email'], password=data['password'])
+        if not user:
+            raise serializers.ValidationError(
+                'Las credenciales no son válidas')
+
+        # Guardamos el usuario en el contexto para posteriormente en create recuperar el token
+        self.context['collaborator'] = user
+        return data
+
+    def create(self, data):
+        """Generar o recuperar token."""
+        token, created = Token.objects.get_or_create(
+            user=self.context['collaborator'])
+        return self.context['collaborator'], token.key
 
 
 class OrderFilter(filters.FilterSet):
@@ -74,15 +108,22 @@ class OrderFilter(filters.FilterSet):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    name_brand = serializers.ReadOnlyField(source='brand_id.name')
+    brand_name = serializers.ReadOnlyField(source='brand.name')
     category_name = serializers.ReadOnlyField(source='category.name')
-    user_name = serializers.ReadOnlyField(source='user.fullname')
+    reference_name = serializers.ReadOnlyField(source='reference.reference')
+    client_name = serializers.ReadOnlyField(source='client.fullname')
+    client_address = serializers.ReadOnlyField(source='client.address')
+    client_municipality = serializers.ReadOnlyField(
+        source='client.municipality')
+    client_phone_number = serializers.ReadOnlyField(
+        source='client.phone_number')
     state_description = serializers.ReadOnlyField(source="get_state_display")
 
     class Meta:
         model = Order
-        fields = ('id', 'entry_date', 'is_guarantee', 'service_number', 'brand_id', 'name_brand',
-                  'category', 'category_name', 'reference', 'serial', 'user', 'user_name', 'reason_for_entry', 'observations', 'diagnostic',
+        fields = ('id', 'entry_date', 'is_guarantee', 'service_number', 'brand', 'brand_name',
+                  'category', 'category_name', 'reference', 'reference_name', 'serial', 'client', 'client_name', 'client_address',
+                  'client_municipality', 'client_phone_number', 'reason_for_entry', 'observations', 'diagnostic',
                   'received_by', 'estimate_for_repair', 'payment', 'payment_for_revision',
                   'paid', 'checked_by', 'repared_by', 'dispatched_by', 'state', 'state_description')
         filterset_class = OrderFilter

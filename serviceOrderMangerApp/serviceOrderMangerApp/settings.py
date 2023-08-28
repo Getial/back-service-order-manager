@@ -43,7 +43,8 @@ THIRD_APPS = [
     'rest_framework',
     "corsheaders",
     'django_filters',
-    'coreapi'
+    'coreapi',
+    'rest_framework.authtoken',
 ]
 
 OWN_APPS = [
