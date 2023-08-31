@@ -18,16 +18,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='order',
             name='checked_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='revisado_por', to='orders.collaborator'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='revisado_por', to='orders.user'),
         ),
         migrations.AddField(
             model_name='order',
             name='dispatched_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='entregado_por', to='orders.collaborator'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='entregado_por', to='orders.user'),
         ),
         migrations.AddField(
             model_name='order',
             name='repared_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='reparado_por', to='orders.collaborator'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT,
+                                    related_name='reparado_por', to='orders.user'),
         ),
     ]

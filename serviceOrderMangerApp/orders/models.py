@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class Brand(models.Model):
@@ -77,19 +78,22 @@ class Client(models.Model):
         return self.fullname
 
 
-class Collaborator(models.Model):
-    name = models.CharField(max_length=50, verbose_name='Nombre')
-    occupation = models.CharField(max_length=50, verbose_name='Cargo')
-    email = models.EmailField(max_length=50, verbose_name='Email')
-    password = models.CharField(max_length=20, verbose_name='Contraseña')
+class User(AbstractUser):
+    username = models.CharField(max_length=50, null=True)
+    fullname = models.CharField(max_length=50)
+    occupation = models.CharField(max_length=50)
+    email = models.EmailField('email address', max_length=50, unique=True)
+    password = models.CharField(max_length=20)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     class Meta:
-        verbose_name = "Collaborator"
-        verbose_name_plural = "Collaborators"
-        ordering = ['name']
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+        ordering = ['fullname']
 
     def __str__(self):
-        return self.name
+        return self.fullname
 
 
 class Order(models.Model):
@@ -111,13 +115,13 @@ class Order(models.Model):
         max_digits=8, decimal_places=0, null=True)
     paid = models.BooleanField(default=False)
     received_by = models.ForeignKey(
-        Collaborator, related_name='recibido_por', on_delete=models.PROTECT)
+        User, related_name='recibido_por', on_delete=models.PROTECT)
     checked_by = models.ForeignKey(
-        Collaborator, related_name='revisado_por', on_delete=models.PROTECT, null=True)
+        User, related_name='revisado_por', on_delete=models.PROTECT, null=True)
     repared_by = models.ForeignKey(
-        Collaborator, related_name='reparado_por', on_delete=models.PROTECT, null=True)
+        User, related_name='reparado_por', on_delete=models.PROTECT, null=True)
     dispatched_by = models.ForeignKey(
-        Collaborator, related_name='entregado_por', on_delete=models.PROTECT, null=True)
+        User, related_name='entregado_por', on_delete=models.PROTECT, null=True)
 
     STATE_CHOICES = (
         ('received', 'Recibido'),

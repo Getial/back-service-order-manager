@@ -1,10 +1,11 @@
 from rest_framework import viewsets, status
 from django.contrib.auth import password_validation, authenticate
+from django.contrib.auth.hashers import make_password
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import HttpResponse, JsonResponse
-from .models import Brand, Category, Reference, Collaborator, Client, Order, Evidence
-from . serializers import BrandSerializer, CategorySerializer, ReferenceSerializer, CollaboratorSerializer, CollaboratorLoginSerializer, ClientSerializer, OrderSerializer, EvidenceSerializer
+from .models import Brand, Category, Reference, User, Client, Order, Evidence
+from . serializers import BrandSerializer, CategorySerializer, ReferenceSerializer, UserSerializer, UserLoginSerializer, UserSignUpSerializer, ClientSerializer, OrderSerializer, EvidenceSerializer
 
 
 class BrandViewSet(viewsets.ModelViewSet):
@@ -45,28 +46,38 @@ class ClientViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class CollaboratorViewSet(viewsets.ModelViewSet):
-    queryset = Collaborator.objects.all()
-    serializer_class = CollaboratorSerializer
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
     # Detail define si es una petición de detalle o no, en methods añadimos el método permitido, en nuestro caso solo vamos a permitir post
     @action(detail=False, methods=['post'])
     def login(self, request):
         email = request.data['email']
         password = request.data["password"]
-        print(email)
-        print(password)
-        user = authenticate(email=email, password=password)
-        return Response(user, status=status.HTTP_200_OK)
-        """Collaborator sign in."""
-        # serializer = CollaboratorLoginSerializer(data=request.data)
+        user = authenticate(request, email=email, password=password)
+        if not user:
+            return JsonResponse("usuario no encontrado", safe=False,
+                                status=status.HTTP_404_NOT_FOUND)
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        # """User sign in."""
+        # serializer = UserLoginSerializer(data=request.data)
         # serializer.is_valid(raise_exception=True)
         # user, token = serializer.save()
         # data = {
-        #     'user': CollaboratorSerializer(user).data,
+        #     'user': UserSerializer(user).data,
         #     'access_token': token
         # }
         # return Response(data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['post'])
+    def signup(self, request):
+        """User sign up."""
+        serializer = UserSignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        data = UserSerializer(user).data
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class EvidenceViewSet(viewsets.ModelViewSet):
@@ -84,3 +95,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         if last is not None:
             queryset = queryset.filter(is_guarantee=False)
         return queryset
+
+    @action(detail=False, methods=['get'])
+    def lastorder(self, request):
+        queryset = Order.objects.all().filter(
+            is_guarantee=False).order_by('-entry_date')[:1]
+        return Response(OrderSerializer(queryset, many=True).data, status=status.HTTP_200_OK)

@@ -1,10 +1,12 @@
 # Django
 from django.contrib.auth import password_validation, authenticate
+# from django.core.validators import RegexValidator, FileExtensionValidator
 
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
+from rest_framework.validators import UniqueValidator
 from django_filters import rest_framework as filters
-from .models import Brand, Category, Reference, Client, Collaborator, Order, Evidence
+from .models import Brand, Category, Reference, Client, User, Order, Evidence
 
 
 class BrandSerializer(serializers.ModelSerializer):
@@ -62,13 +64,13 @@ class ClientSerializer(serializers.ModelSerializer):
         filterset_class = ClientFilter
 
 
-class CollaboratorSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Collaborator
-        fields = ('id', 'name', 'occupation', 'email', 'password')
+        model = User
+        fields = ('id', 'username', 'fullname', 'occupation', 'email')
 
 
-class CollaboratorLoginSerializer(serializers.Serializer):
+class UserLoginSerializer(serializers.Serializer):
 
     # Campos que vamos a requerir
     email = serializers.EmailField()
@@ -76,24 +78,76 @@ class CollaboratorLoginSerializer(serializers.Serializer):
 
     # Primero validamos los datos
     def validate(self, data):
-        print(data['email'])
-        print(data['password'])
         # authenticate recibe las credenciales, si son válidas devuelve el objeto del usuario
         user = authenticate(
             email=data['email'], password=data['password'])
+        print(f'user {user}')
         if not user:
             raise serializers.ValidationError(
                 'Las credenciales no son válidas')
 
         # Guardamos el usuario en el contexto para posteriormente en create recuperar el token
-        self.context['collaborator'] = user
+        self.context['user'] = user
         return data
 
     def create(self, data):
         """Generar o recuperar token."""
         token, created = Token.objects.get_or_create(
-            user=self.context['collaborator'])
-        return self.context['collaborator'], token.key
+            user=self.context['user'])
+        return self.context['user'], token.key
+
+
+class UserSignUpSerializer(serializers.Serializer):
+
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    fullname = serializers.CharField(
+        min_length=4,
+        max_length=30,
+        validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+
+    username = serializers.CharField(
+        min_length=4,
+        max_length=30,
+    )
+
+    # phone_regex = RegexValidator(
+    #     regex=r'\+?1?\d{9,15}$',
+    #     message="Debes introducir un número con el siguiente formato: +999999999. El límite son de 15 dígitos."
+    # )
+    # phone = serializers.CharField(validators=[phone_regex], required=False)
+
+    occupation = serializers.CharField(min_length=8, max_length=64)
+
+    password = serializers.CharField(min_length=8, max_length=64)
+    password_confirmation = serializers.CharField(min_length=8, max_length=64)
+
+    first_name = serializers.CharField(min_length=2, max_length=50)
+    last_name = serializers.CharField(min_length=2, max_length=100)
+
+    def validate(self, data):
+        passwd = data['password']
+        passwd_conf = data['password_confirmation']
+        if passwd != passwd_conf:
+            raise serializers.ValidationError("Las contraseñas no coinciden")
+        password_validation.validate_password(passwd)
+
+        # image = None
+        # if 'photo' in data:
+        #     image = data['photo']
+
+        # if image:
+        #     if image.size > (512 * 1024):
+        #         raise serializers.ValidationError(f"La imagen es demasiado grande, el peso máximo permitido es de 512KB y el tamaño enviado es de {round(image.size / 1024)}KB")
+
+        return data
+
+    def create(self, data):
+        data.pop('password_confirmation')
+        user = User.objects.create_user(**data)
+        return user
 
 
 class OrderFilter(filters.FilterSet):
