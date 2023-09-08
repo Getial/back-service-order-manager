@@ -183,6 +183,16 @@ class OrderSerializer(serializers.ModelSerializer):
         filterset_class = OrderFilter
 
 
+class OrderSimpleSerializer(serializers.ModelSerializer):
+    client_name = serializers.ReadOnlyField(source='client.fullname')
+    state_description = serializers.ReadOnlyField(source="get_state_display")
+
+    class Meta:
+        model = Order
+        fields = ('id', 'entry_date', 'service_number',
+                  'client_name', 'state_description')
+
+
 class EvidenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evidence

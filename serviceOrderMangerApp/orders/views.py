@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import HttpResponse, JsonResponse
 from .models import Brand, Category, Reference, User, Client, Order, Evidence
-from . serializers import BrandSerializer, CategorySerializer, ReferenceSerializer, UserSerializer, UserLoginSerializer, UserSignUpSerializer, ClientSerializer, OrderSerializer, EvidenceSerializer
+from . serializers import BrandSerializer, CategorySerializer, ReferenceSerializer, UserSerializer, UserLoginSerializer, UserSignUpSerializer, ClientSerializer, OrderSerializer, OrderSimpleSerializer, EvidenceSerializer
 
 
 class BrandViewSet(viewsets.ModelViewSet):
@@ -101,3 +101,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         queryset = Order.objects.all().filter(
             is_guarantee=False).order_by('-entry_date')[:1]
         return Response(OrderSerializer(queryset, many=True).data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def simpleinformation(self, request):
+        queryset = Order.objects.all().order_by('-entry_date')
+        return Response(OrderSimpleSerializer(queryset, many=True).data, status=status.HTTP_200_OK)
