@@ -97,7 +97,6 @@ class User(AbstractUser):
 
 
 class Order(models.Model):
-    entry_date = models.DateTimeField("Fecha de ingreso")
     is_guarantee = models.BooleanField(default=False)
     service_number = models.CharField(max_length=30, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT)
@@ -114,6 +113,14 @@ class Order(models.Model):
     payment_for_revision = models.DecimalField(
         max_digits=8, decimal_places=0, null=True)
     paid = models.BooleanField(default=False)
+    entry_date = models.DateTimeField("Fecha recibido")
+    admitted_date = models.DateField("Fecha ingresado", null=True)
+    revised_date = models.DateField("Fecha revisado", null=True)
+    warranty_denial_date = models.DateField(
+        "Fecha negacion garantia", null=True)
+    quoted_date = models.DateField("Fecha cotizado", null=True)
+    reapired_date = models.DateField("Fecha reparado", null=True)
+    delivered_date = models.DateField("Fecha entregado", null=True)
     received_by = models.ForeignKey(
         User, related_name='recibido_por', on_delete=models.PROTECT)
     checked_by = models.ForeignKey(
@@ -129,7 +136,7 @@ class Order(models.Model):
         ('in_revision', 'En revision'),
         ('revised', 'Revisado'),
         ('waiting_response_brand', 'En espera de respuesta de la marca'),
-        ('warranty denial', 'Negacion de garantia'),
+        ('warranty_denial', 'Negacion de garantia'),
         ('quoted', 'Cotizado'),
         ('waiting_for_spare_parts', 'En espera de repuestos'),
         ('spare_parts_ready', 'Repuestos en taller'),
@@ -141,6 +148,20 @@ class Order(models.Model):
         max_length=25,
         choices=STATE_CHOICES,
         default=STATE_CHOICES[0]
+    )
+
+    TYPE_CHOICES = (
+        ('collect', 'Cobro'),
+        ('warranty', 'Garantia'),
+        ('workshop_warranty', 'Garantia de taller'),
+        ('warranty_denial', 'Negacion de garantia'),
+        ('workshop_warranty_denial', 'Negacion de garantia de taller'),
+    )
+
+    type_service = models.CharField(
+        max_length=25,
+        choices=TYPE_CHOICES,
+        default=TYPE_CHOICES[0]
     )
 
     class Meta:
