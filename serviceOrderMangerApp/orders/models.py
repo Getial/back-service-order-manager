@@ -83,7 +83,7 @@ class User(AbstractUser):
     fullname = models.CharField(max_length=50)
     occupation = models.CharField(max_length=50)
     email = models.EmailField('email address', max_length=50, unique=True)
-    password = models.CharField(max_length=20)
+    password = models.CharField(max_length=100)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
@@ -103,10 +103,13 @@ class Order(models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     reference = models.ForeignKey(Reference, on_delete=models.PROTECT)
     serial = models.CharField(max_length=30, null=True)
-    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    client = models.ForeignKey(
+        Client, on_delete=models.PROTECT, related_name='Order')
     reason_for_entry = models.CharField(max_length=200, null=True)
     observations = models.TextField(max_length=500)
     diagnostic = models.TextField(max_length=1000, null=True)
+    is_necesary_spare_parts = models.BooleanField(default=False)
+    spare_parts_list = models.TextField(max_length=2000, null=True)
     estimate_for_repair = models.DecimalField(
         max_digits=8, decimal_places=0, null=True)
     payment = models.DecimalField(max_digits=8, decimal_places=0, null=True)
@@ -177,3 +180,6 @@ class Evidence(models.Model):
     image = models.ImageField(upload_to='evidences', verbose_name='Imagen')
     order = models.ForeignKey(
         Order, on_delete=models.CASCADE, related_name='evidences', verbose_name='Orden')
+
+    def __str__(self):
+        return self.image.url

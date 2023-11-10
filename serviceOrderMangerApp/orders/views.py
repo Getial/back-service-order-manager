@@ -89,12 +89,21 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all().order_by('-entry_date')
     serializer_class = OrderSerializer
 
-    def get_queryset(self):
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     search = self.request.query_params.get('os', None)
+    #     if search is not None:
+    #         queryset = queryset.filter(service_number__icontains=search)
+    #     return queryset
+
+    @action(detail=False, methods=['get'])
+    def searchorder(self, request):
         queryset = super().get_queryset()
-        last = self.request.query_params.get('last', None)
-        if last is not None:
-            queryset = queryset.filter(is_guarantee=False)
-        return queryset
+        search = self.request.query_params.get('os', None)
+        if search is not None:
+            queryset = queryset.filter(service_number__icontains=search) | queryset.filter(
+                client__fullname__icontains=search)
+        return Response(OrderSimpleSerializer(queryset, many=True).data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'])
     def lastorder(self, request):

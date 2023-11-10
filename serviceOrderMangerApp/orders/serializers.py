@@ -151,13 +151,16 @@ class UserSignUpSerializer(serializers.Serializer):
 
 
 class OrderFilter(filters.FilterSet):
-    is_guarantee = filters.NumberFilter(
-        field_name='is_guarantee', lookup_expr='exact')
+    service_number = filters.CharFilter(
+        method='filter_by_search', lookup_expr='icontains')
+
+    def filter_by_search(self, queryset, value):
+        return queryset.filter(service_number__icontains=value) | queryset.filter(client__fullname__icontains=value)
 
     class Meta:
         model = Order
         fields = {
-            'is_guarantee': ['exact'],
+            'service_number': ['icontains'],
         }
 
 
@@ -172,15 +175,16 @@ class OrderSerializer(serializers.ModelSerializer):
     client_phone_number = serializers.ReadOnlyField(
         source='client.phone_number')
     state_description = serializers.ReadOnlyField(source="get_state_display")
+    # evidences = serializers.ReadOnlyField(source="evidences.image")
 
     class Meta:
         model = Order
         fields = ('id', 'entry_date', 'is_guarantee', 'service_number', 'brand', 'brand_name',
                   'category', 'category_name', 'reference', 'reference_name', 'serial', 'client', 'client_name', 'client_address',
-                  'client_municipality', 'client_phone_number', 'reason_for_entry', 'observations', 'diagnostic',
-                  'received_by', 'estimate_for_repair', 'payment', 'payment_for_revision',
-                  'paid', 'checked_by', 'repared_by', 'dispatched_by', 'state', 'state_description')
-        filterset_class = OrderFilter
+                  'client_municipality', 'client_phone_number', 'reason_for_entry', 'observations', 'diagnostic', 'is_necesary_spare_parts', 'spare_parts_list',
+                  'estimate_for_repair', 'payment', 'payment_for_revision',
+                  'paid', 'received_by', 'checked_by', 'repared_by', 'dispatched_by', 'state', 'state_description', 'evidences')
+        # filterset_class = OrderFilter
 
 
 class OrderSimpleSerializer(serializers.ModelSerializer):
@@ -196,4 +200,4 @@ class OrderSimpleSerializer(serializers.ModelSerializer):
 class EvidenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Evidence
-        fields = ('image', 'order')
+        fields = ('id', 'image', 'order')
