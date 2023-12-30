@@ -64,6 +64,8 @@ class Reference(models.Model):
 
 class Client(models.Model):
     fullname = models.CharField(max_length=50, verbose_name='Nombre completo')
+    genred = models.CharField(max_length=20, verbose_name="Genero", null=True)
+    is_company = models.BooleanField(default=False)
     document = models.CharField(
         max_length=20, verbose_name='Documento', unique=True)
     phone_number = models.CharField(max_length=20, verbose_name='Celular')

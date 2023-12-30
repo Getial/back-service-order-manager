@@ -59,7 +59,7 @@ class ClientFilter(filters.FilterSet):
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = ('id', 'fullname', 'document', 'phone_number',
+        fields = ('id', 'fullname', 'genred', 'is_company', 'document', 'phone_number',
                   'second_phone_number', 'email', 'municipality', 'address')
         filterset_class = ClientFilter
 

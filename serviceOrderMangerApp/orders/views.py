@@ -113,5 +113,5 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def simpleinformation(self, request):
-        queryset = Order.objects.all().order_by('-entry_date')
+        queryset = Order.objects.all().exclude(state="delivered").order_by('-entry_date')
         return Response(OrderSimpleSerializer(queryset, many=True).data, status=status.HTTP_200_OK)
