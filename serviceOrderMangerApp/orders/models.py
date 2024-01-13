@@ -111,11 +111,11 @@ class Order(models.Model):
     observations = models.TextField(max_length=500)
     diagnostic = models.TextField(max_length=1000, null=True)
     is_necesary_spare_parts = models.BooleanField(default=False)
-    spare_parts_list = models.TextField(max_length=2000, null=True)
-    estimate_for_repair = models.DecimalField(
+    spare_parts_list = models.TextField(max_length=2000, null=True, blank=True)
+    price_estimate_for_repair = models.DecimalField(
         max_digits=8, decimal_places=0, null=True)
     payment = models.DecimalField(max_digits=8, decimal_places=0, null=True)
-    payment_for_revision = models.DecimalField(
+    price_for_revision = models.DecimalField(
         max_digits=8, decimal_places=0, null=True)
     paid = models.BooleanField(default=False)
     entry_date = models.DateTimeField("Fecha recibido")

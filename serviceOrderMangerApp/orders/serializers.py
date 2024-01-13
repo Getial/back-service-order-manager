@@ -175,14 +175,15 @@ class OrderSerializer(serializers.ModelSerializer):
     client_phone_number = serializers.ReadOnlyField(
         source='client.phone_number')
     state_description = serializers.ReadOnlyField(source="get_state_display")
+    type_service_description = serializers.ReadOnlyField(source="get_type_service_display")
     # evidences = serializers.ReadOnlyField(source="evidences.image")
 
     class Meta:
         model = Order
-        fields = ('id', 'entry_date', 'is_guarantee', 'service_number', 'brand', 'brand_name',
+        fields = ('id', 'entry_date', 'is_guarantee', 'type_service', 'type_service_description', 'service_number', 'brand', 'brand_name',
                   'category', 'category_name', 'reference', 'reference_name', 'serial', 'client', 'client_name', 'client_address',
                   'client_municipality', 'client_phone_number', 'reason_for_entry', 'observations', 'diagnostic', 'is_necesary_spare_parts', 'spare_parts_list',
-                  'estimate_for_repair', 'payment', 'payment_for_revision',
+                  'price_estimate_for_repair', 'payment', 'price_for_revision',
                   'paid', 'received_by', 'checked_by', 'repared_by', 'dispatched_by', 'state', 'state_description', 'evidences')
         # filterset_class = OrderFilter
 
