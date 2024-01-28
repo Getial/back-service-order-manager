@@ -180,7 +180,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'entry_date', 'is_guarantee', 'type_service', 'type_service_description', 'service_number', 'brand', 'brand_name',
+        fields = ('id', 'entry_date', 'admitted_date', 'revised_date', 'warranty_denial_date', 'quoted_date', 'reapired_date',
+                  'delivered_date', 'is_guarantee', 'type_service', 'type_service_description ', 'service_number', 'brand', 'brand_name',
                   'category', 'category_name', 'reference', 'reference_name', 'serial', 'client', 'client_name', 'client_address',
                   'client_municipality', 'client_phone_number', 'reason_for_entry', 'observations', 'diagnostic', 'is_necesary_spare_parts', 'spare_parts_list',
                   'price_estimate_for_repair', 'payment', 'price_for_revision',
