@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['18.221.40.37']
 
 
 # Application definition
@@ -199,4 +199,4 @@ AWS_DEFAULT_ACL = None
 AWS_S3_VERITY = True
 DEFAULT_FILE_STORAGE = config('DEFAULT_FILE_STORAGE')
 
-SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = True
