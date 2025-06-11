@@ -21,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = 'django-insecure-%&@)ji8pfittekay5@mk!-hige=cr=3^7+86v)(lsl%&2-o@p-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG')
+DEBUG = True
 
 ALLOWED_HOSTS = ['18.221.40.37']
 
@@ -76,7 +76,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://10.0.2.2:8081',
 ]
 
-ALLOWED_HOSTS = ['*', '127.0.0.1', '10.0.2.2', '192.168.101.6']
+ALLOWED_HOSTS = ['*', '127.0.0.1', '10.0.2.2', '192.168.101.2']
 
 CORS_ALLOW_METHODS = (
     "DELETE",
@@ -115,24 +115,24 @@ WSGI_APPLICATION = 'serviceOrderMangerApp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': config('DB_HOST'),
-        # 'HOST': 'localhost',
-        'PORT': 5432,
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config("DB_PASSWORD")
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'HOST': config('DB_HOST'),
+#         # 'HOST': 'localhost',
+#         'PORT': 5432,
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config("DB_PASSWORD")
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
@@ -189,14 +189,14 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'orders.User'
 
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_SIGNATURE_NAME = 's3v4',
-AWS_S3_REGION_NAME = 'us-east-2'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERITY = True
-DEFAULT_FILE_STORAGE = config('DEFAULT_FILE_STORAGE')
+# AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_SIGNATURE_NAME = 's3v4',
+# AWS_S3_REGION_NAME = 'us-east-2'
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_S3_VERITY = True
+# DEFAULT_FILE_STORAGE = config('DEFAULT_FILE_STORAGE')
 
 # SECURE_SSL_REDIRECT = True

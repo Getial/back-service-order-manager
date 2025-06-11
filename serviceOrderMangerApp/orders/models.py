@@ -112,6 +112,7 @@ class Order(models.Model):
     diagnostic = models.TextField(max_length=1000, null=True)
     is_necesary_spare_parts = models.BooleanField(default=False)
     spare_parts_list = models.TextField(max_length=2000, null=True, blank=True)
+    warranty_denial_reason = models.TextField(max_length=2000, null=True)
     price_estimate_for_repair = models.DecimalField(
         max_digits=8, decimal_places=0, null=True)
     payment = models.DecimalField(max_digits=8, decimal_places=0, null=True)
@@ -119,18 +120,18 @@ class Order(models.Model):
         max_digits=8, decimal_places=0, null=True)
     paid = models.BooleanField(default=False)
     entry_date = models.DateTimeField("Fecha recibido")
-    admitted_date = models.DateField("Fecha ingresado", null=True)
-    revised_date = models.DateField("Fecha revisado", null=True)
-    warranty_denial_date = models.DateField(
+    admitted_date = models.DateTimeField("Fecha ingresado", null=True)
+    revised_date = models.DateTimeField("Fecha revisado", null=True)
+    warranty_denial_date = models.DateTimeField(
         "Fecha negacion garantia", null=True)
-    quoted_date = models.DateField("Fecha cotizado", null=True)
-    reapired_date = models.DateField("Fecha reparado", null=True)
-    delivered_date = models.DateField("Fecha entregado", null=True)
+    quoted_date = models.DateTimeField("Fecha cotizado", null=True)
+    repaired_date = models.DateTimeField("Fecha reparado", null=True)
+    delivered_date = models.DateTimeField("Fecha entregado", null=True)
     received_by = models.ForeignKey(
         User, related_name='recibido_por', on_delete=models.PROTECT)
-    checked_by = models.ForeignKey(
+    revised_by = models.ForeignKey(
         User, related_name='revisado_por', on_delete=models.PROTECT, null=True)
-    repared_by = models.ForeignKey(
+    repaired_by = models.ForeignKey(
         User, related_name='reparado_por', on_delete=models.PROTECT, null=True)
     dispatched_by = models.ForeignKey(
         User, related_name='entregado_por', on_delete=models.PROTECT, null=True)
